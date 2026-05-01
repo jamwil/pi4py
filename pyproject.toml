@@ -1,0 +1,30 @@
+[project]
+name = "pi4py"
+version = "0.1.0a1"
+description = "Python wheel wrapper for the @jamwil/pi coding agent"
+readme = "README.md"
+authors = [
+    { name = "James Williams", email = "jamwil@gmail.com" }
+]
+requires-python = ">=3.9"
+dependencies = [
+    "nodejs-wheel-binaries==24.15.0",
+]
+
+[project.urls]
+Repository = "https://github.com/jamwil/pi4py"
+
+[project.scripts]
+pi = "pi4py._launcher:main"
+
+[build-system]
+requires = ["setuptools>=80", "wheel", "nodejs-wheel-binaries==24.15.0"]
+build-backend = "pi4py_build_backend"
+backend-path = ["."]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
