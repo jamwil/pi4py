@@ -1,0 +1,12 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+/build/
+/dist/
+wheels/
+*.egg-info
+src/pi4py/_vendor/npm_runtime/
+
+# Virtual environments
+.venv
+.python-version

@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+set -eu
+PYTHON_EXECUTABLE="${PI4PY_PYTHON_EXECUTABLE:-python}"
+exec "$PYTHON_EXECUTABLE" -m pi4py._nodejs node "$@"

@@ -1,0 +1,5 @@
+include pi4py_build_backend.py
+include tools/prune_npm_runtime.py
+include src/pi4py/py.typed
+recursive-include src/pi4py/_shim *
+recursive-include src/pi4py/_vendor/npm_runtime *
