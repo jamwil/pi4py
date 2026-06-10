@@ -10,3 +10,4 @@ src/pi4py/_vendor/npm_runtime/
 # Virtual environments
 .venv
 .python-version
+.env

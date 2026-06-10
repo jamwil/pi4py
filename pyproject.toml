@@ -1,6 +1,6 @@
 [project]
 name = "pi4py"
-version = "0.1.0a1"
+version = "0.1.0a2"
 description = "Python wheel wrapper for the @jamwil/pi coding agent"
 readme = "README.md"
 authors = [
@@ -8,7 +8,7 @@ authors = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "nodejs-wheel-binaries==24.15.0",
+    "nodejs-wheel-binaries~=24.14",
 ]
 
 [project.urls]
@@ -18,7 +18,7 @@ Repository = "https://github.com/jamwil/pi4py"
 pi = "pi4py._launcher:main"
 
 [build-system]
-requires = ["setuptools>=80", "wheel", "nodejs-wheel-binaries==24.15.0"]
+requires = ["setuptools>=80", "wheel", "nodejs-wheel-binaries~=24.14"]
 build-backend = "pi4py_build_backend"
 backend-path = ["."]
 
