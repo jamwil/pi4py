@@ -34,7 +34,7 @@ def _argv(env: dict[str, str]) -> list[str]:
     try:
         pi_cli = ensure_cli()
     except Exception as exc:
-        raise SystemExit(f"Unable to locate bundled @jamwil/pi runtime: {exc}") from exc
+        raise SystemExit(f"Unable to locate bundled @jamwil/pi-coding-agent runtime: {exc}") from exc
 
     return [node_executable(), str(pi_cli), *sys.argv[1:]]
 

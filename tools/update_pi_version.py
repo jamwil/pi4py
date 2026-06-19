@@ -23,8 +23,8 @@ def update_pi_version(version: str) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Update the pinned @jamwil/pi version")
-    parser.add_argument("--version", required=True, help="@jamwil/pi version to install at runtime")
+    parser = argparse.ArgumentParser(description="Update the pinned @jamwil/pi-coding-agent version")
+    parser.add_argument("--version", required=True, help="@jamwil/pi-coding-agent version to install at runtime")
     args = parser.parse_args()
     update_pi_version(args.version)
     return 0

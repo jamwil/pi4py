@@ -1,6 +1,6 @@
 [project]
 name = "pi4py"
-version = "0.1.0a2"
+version = "0.76.1"
 description = "Python wheel wrapper for the @jamwil/pi coding agent"
 readme = "README.md"
 authors = [

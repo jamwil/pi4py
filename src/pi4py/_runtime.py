@@ -11,7 +11,7 @@ def install_root() -> Path:
 
 
 def cli_path() -> Path:
-    return install_root() / "node_modules" / "@jamwil" / "pi" / "dist" / "cli.js"
+    return install_root() / "node_modules" / "@jamwil" / "pi-coding-agent" / "dist" / "cli.js"
 
 
 def ensure_cli() -> Path:

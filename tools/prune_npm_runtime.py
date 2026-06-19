@@ -76,8 +76,8 @@ REMOVABLE_NAMES = {
 
 # Keep pi's own user-facing docs/examples because the system prompt points to them.
 KEEP_PREFIX_PARTS = {
-    ("@jamwil", "pi", "docs"),
-    ("@jamwil", "pi", "examples"),
+    ("@jamwil", "pi-coding-agent", "docs"),
+    ("@jamwil", "pi-coding-agent", "examples"),
 }
 
 
@@ -92,7 +92,7 @@ def _is_kept(path: Path, root: Path) -> bool:
     parts = _relative_parts(path, root)
     if any(parts[: len(prefix)] == prefix for prefix in KEEP_PREFIX_PARTS):
         return True
-    return parts[:2] == ("@jamwil", "pi") and path.name.lower() in {"readme.md", "changelog.md"}
+    return parts[:2] == ("@jamwil", "pi-coding-agent") and path.name.lower() in {"readme.md", "changelog.md"}
 
 
 def prune_npm_runtime(root: Path = DEFAULT_RUNTIME_ROOT) -> None:
