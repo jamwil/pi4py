@@ -5,7 +5,7 @@ __pycache__/
 /dist/
 wheels/
 *.egg-info
-src/pi4py/_vendor/npm_runtime/
+src/pi4py/_vendor/
 
 # Virtual environments
 .venv
