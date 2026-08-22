@@ -2,7 +2,7 @@
 
 `pi4py` packages a Python launcher for the `@jamwil/pi-coding-agent` npm CLI.
 
-`@jamwil/pi-coding-agent` is a slow fork of `@mariozechner/pi-coding-agent`.
+`@jamwil/pi-coding-agent` is a slow fork of `@earendil-works/pi-coding-agent`.
 
 The primary use for this is to expose a self-contained `pi` executable that can
 be used from python using rpc mode.
@@ -29,7 +29,7 @@ process.wait()
 The `pi` entry point launches the bundled `@jamwil/pi-coding-agent` CLI with the
 bundled Node.js executable. The npm dependencies, including
 `@jamwil/pi-coding-agent` itself, are installed during wheel build / pip install
-from sdist, not on first launch.
+from sdist.
 
 It also routes `npm`, `npx`, `node`, and `corepack` lookups to bundled shims and
 isolates npm global installs under `PI_CODING_AGENT_DIR/npm-global` by default.
@@ -46,8 +46,8 @@ Useful environment variables:
 Sync dependencies, then update the pinned npm version:
 
 ```bash
-uv sync
-uv run python tools/update_pi_version.py --version 0.66.1-jamwil.0
+uv sync --all-extras
+uv run python tools/update_pi_version.py --version 0.84.3-jamwil.0
 ```
 
 ## Building
@@ -61,9 +61,6 @@ production npm dependencies into `src/pi4py/_vendor/npm_runtime`, prunes the
 runtime, and includes it in the wheel.
 
 ## Testing the bundled wheel
-
-`uv run pi` may run the local editable/source checkout rather than the wheel
-artifact. To test the actual bundled runtime:
 
 ```bash
 uv run --no-editable pi --help
