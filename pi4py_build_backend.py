@@ -3,14 +3,13 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import tarfile
 import tempfile
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from setuptools import build_meta as _setuptools_build_meta
 from setuptools.build_meta import *  # noqa: F401,F403 - re-export PEP 517 hooks
-
-from tools.prune_npm_runtime import prune_npm_runtime
 
 try:
     from nodejs_wheel.executable import npm
@@ -22,9 +21,10 @@ else:
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 RUNTIME_DIR = PROJECT_ROOT / "src" / "pi4py" / "_vendor" / "npm_runtime"
-RUNTIME_METADATA = PROJECT_ROOT / "src" / "pi4py" / "_vendor" / "runtime.json"
+RUNTIME_METADATA = RUNTIME_DIR / "runtime.json"
 PI_PACKAGE_NAME = "@jamwil/pi-coding-agent"
-PI_VERSION = "0.84.3-jamwil.0"
+PI_VERSION = "0.84.3-dev.1"
+STANDALONE_PREFIX = PurePosixPath("package/dist/standalone")
 
 
 def _run_npm(args: list[str], cwd: Path, env: dict[str, str]) -> None:
@@ -45,38 +45,54 @@ def _build_env() -> dict[str, str]:
     return env
 
 
-def _install_runtime(runtime_project_dir: Path, env: dict[str, str]) -> None:
-    (runtime_project_dir / "package.json").write_text(
-        json.dumps(
-            {
-                "name": "pi4py-runtime",
-                "private": True,
-                "dependencies": {PI_PACKAGE_NAME: PI_VERSION},
-            },
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
+def _extract_standalone(package_tarball: Path) -> None:
+    prefix_parts = STANDALONE_PREFIX.parts
 
+    with tarfile.open(package_tarball, "r:gz") as archive:
+        for member in archive.getmembers():
+            member_path = PurePosixPath(member.name)
+            if member_path.parts[: len(prefix_parts)] != prefix_parts:
+                continue
+
+            relative_path = PurePosixPath(*member_path.parts[len(prefix_parts) :])
+            if not relative_path.parts:
+                continue
+            if relative_path.is_absolute() or ".." in relative_path.parts:
+                raise RuntimeError(f"Unsafe path in npm package: {member.name}")
+
+            destination = RUNTIME_DIR.joinpath(*relative_path.parts)
+            if member.isdir():
+                destination.mkdir(parents=True, exist_ok=True)
+                continue
+            if not member.isfile():
+                raise RuntimeError(f"Unsupported entry in standalone runtime: {member.name}")
+
+            source = archive.extractfile(member)
+            if source is None:
+                raise RuntimeError(f"Could not read standalone runtime entry: {member.name}")
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with source, destination.open("wb") as output:
+                shutil.copyfileobj(source, output)
+            destination.chmod(member.mode)
+
+    cli_js = RUNTIME_DIR / "cli.mjs"
+    if not cli_js.is_file():
+        raise RuntimeError(f"Standalone pi CLI was not found in {package_tarball}")
+
+
+def _fetch_runtime(download_dir: Path, env: dict[str, str]) -> None:
     _run_npm(
-        [
-            "install",
-            "--omit=dev",
-            "--omit=optional",
-            "--ignore-scripts",
-            "--no-audit",
-            "--no-fund",
-        ],
-        cwd=runtime_project_dir,
+        ["pack", f"{PI_PACKAGE_NAME}@{PI_VERSION}", "--ignore-scripts"],
+        cwd=download_dir,
         env=env,
     )
 
-    cli_js = runtime_project_dir / "node_modules" / "@jamwil" / "pi-coding-agent" / "dist" / "cli.js"
-    if not cli_js.is_file():
-        raise RuntimeError(f"Installed pi CLI was not found: {cli_js}")
-
-    shutil.rmtree(runtime_project_dir / "node_modules" / ".bin", ignore_errors=True)
+    package_tarballs = list(download_dir.glob("*.tgz"))
+    if len(package_tarballs) != 1:
+        raise RuntimeError(
+            f"Expected one npm package tarball, found {len(package_tarballs)} in {download_dir}"
+        )
+    _extract_standalone(package_tarballs[0])
 
 
 def _clean_runtime() -> None:
@@ -91,27 +107,16 @@ def _build_pi_runtime() -> None:
     _clean_runtime()
     env = _build_env()
 
+    RUNTIME_DIR.mkdir(parents=True)
     with tempfile.TemporaryDirectory(prefix="pi4py-build-") as temp_dir_name:
-        temp_dir = Path(temp_dir_name)
-        runtime_project_dir = temp_dir / "runtime"
-        runtime_project_dir.mkdir()
-
-        _install_runtime(runtime_project_dir, env)
-
-        RUNTIME_DIR.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(runtime_project_dir / "node_modules", RUNTIME_DIR / "node_modules")
-        prune_npm_runtime(RUNTIME_DIR / "node_modules")
-        shutil.copy2(runtime_project_dir / "package.json", RUNTIME_DIR / "package.json")
-        package_lock = runtime_project_dir / "package-lock.json"
-        if package_lock.is_file():
-            shutil.copy2(package_lock, RUNTIME_DIR / "package-lock.json")
+        _fetch_runtime(Path(temp_dir_name), env)
 
     RUNTIME_METADATA.write_text(
         json.dumps(
             {
                 "package": PI_PACKAGE_NAME,
                 "version": PI_VERSION,
-                "source": "npm",
+                "source": "npm-pack:dist/standalone",
                 "built_at": datetime.now(timezone.utc).isoformat(),
             },
             indent=2,

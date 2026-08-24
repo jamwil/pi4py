@@ -11,8 +11,8 @@ be used from python using rpc mode.
 
 - a `pi` console script
 - `nodejs-wheel-binaries` as the bundled Node.js runtime
-- a build hook that installs the pinned `@jamwil/pi-coding-agent` npm package
-  and packages the resulting npm runtime into the Python wheel
+- a build hook that downloads the pinned `@jamwil/pi-coding-agent` npm package
+  and packages its standalone JavaScript bundle into the Python wheel
 
 ## Usage
 
@@ -27,9 +27,8 @@ process.wait()
 ```
 
 The `pi` entry point launches the bundled `@jamwil/pi-coding-agent` CLI with the
-bundled Node.js executable. The npm dependencies, including
-`@jamwil/pi-coding-agent` itself, are installed during wheel build / pip install
-from sdist.
+bundled Node.js executable. The standalone `@jamwil/pi-coding-agent` bundle is
+downloaded during wheel build / pip install from sdist.
 
 It also routes `npm`, `npx`, `node`, and `corepack` lookups to bundled shims and
 isolates npm global installs under `PI_CODING_AGENT_DIR/npm-global` by default.
@@ -47,7 +46,7 @@ Sync dependencies, then update the pinned npm version:
 
 ```bash
 uv sync --all-extras
-uv run python tools/update_pi_version.py --version 0.84.3-jamwil.0
+uv run python tools/update_pi_version.py --version 0.84.3-dev.1
 ```
 
 ## Building
@@ -56,9 +55,9 @@ uv run python tools/update_pi_version.py --version 0.84.3-jamwil.0
 uv build
 ```
 
-Building downloads the pinned `@jamwil/pi-coding-agent` npm package plus its
-production npm dependencies into `src/pi4py/_vendor/npm_runtime`, prunes the
-runtime, and includes it in the wheel.
+Building downloads the pinned `@jamwil/pi-coding-agent` npm tarball, extracts
+its `dist/standalone` bundle into `src/pi4py/_vendor/npm_runtime`, and includes
+that small runtime in the wheel.
 
 ## Testing the bundled wheel
 
