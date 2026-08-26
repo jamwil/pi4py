@@ -21,9 +21,10 @@ else:
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 RUNTIME_DIR = PROJECT_ROOT / "src" / "pi4py" / "_vendor" / "npm_runtime"
+BUILD_LIB_RUNTIME_DIR = PROJECT_ROOT / "build" / "lib" / "pi4py" / "_vendor" / "npm_runtime"
 RUNTIME_METADATA = RUNTIME_DIR / "runtime.json"
 PI_PACKAGE_NAME = "@jamwil/pi-coding-agent"
-PI_VERSION = "0.84.3-dev.1"
+PI_VERSION = "0.84.3-dev.2"
 STANDALONE_PREFIX = PurePosixPath("package/dist/standalone")
 
 
@@ -96,7 +97,11 @@ def _fetch_runtime(download_dir: Path, env: dict[str, str]) -> None:
 
 
 def _clean_runtime() -> None:
+    # Wipe both the source tree and any stale setuptools build/lib copy so
+    # files removed upstream (e.g. the pre-standalone node_modules tree) don't
+    # get merged back into the wheel on a rebuild.
     shutil.rmtree(RUNTIME_DIR, ignore_errors=True)
+    shutil.rmtree(BUILD_LIB_RUNTIME_DIR, ignore_errors=True)
     RUNTIME_METADATA.unlink(missing_ok=True)
 
 
