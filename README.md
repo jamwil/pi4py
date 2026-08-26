@@ -62,5 +62,5 @@ that small runtime in the wheel.
 ## Testing the bundled wheel
 
 ```bash
-uv run --no-editable pi --help
+uv run --no-editable pi --version
 ```
