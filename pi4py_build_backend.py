@@ -24,7 +24,7 @@ RUNTIME_DIR = PROJECT_ROOT / "src" / "pi4py" / "_vendor" / "npm_runtime"
 BUILD_LIB_RUNTIME_DIR = PROJECT_ROOT / "build" / "lib" / "pi4py" / "_vendor" / "npm_runtime"
 RUNTIME_METADATA = RUNTIME_DIR / "runtime.json"
 PI_PACKAGE_NAME = "@jamwil/pi-coding-agent"
-PI_VERSION = "v0.84.3-dev.3"
+PI_VERSION = "v0.84.4000"
 STANDALONE_PREFIX = PurePosixPath("package/dist/standalone")
 
 
