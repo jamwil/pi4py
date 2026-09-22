@@ -20,7 +20,7 @@ wheels = [
 
 [[package]]
 name = "pi4py"
-version = "0.84.4000"
+version = "0.87.0"
 source = { editable = "." }
 dependencies = [
     { name = "nodejs-wheel-binaries" },
