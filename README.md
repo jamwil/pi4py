@@ -26,6 +26,21 @@ process = subprocess.Popen(["pi", "--help"])
 process.wait()
 ```
 
+To get the absolute path to the Node.js binary installed by
+`nodejs-wheel-binaries` in the active virtual environment:
+
+```python
+from pi4py import get_node_binary
+
+node = get_node_binary()
+```
+
+You can also print the path directly from the command line:
+
+```bash
+pi-node-path
+```
+
 The `pi` entry point launches the bundled `@jamwil/pi-coding-agent` CLI with the
 bundled Node.js executable. The standalone `@jamwil/pi-coding-agent` bundle is
 downloaded during wheel build / pip install from sdist.

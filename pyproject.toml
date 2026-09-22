@@ -16,6 +16,7 @@ Repository = "https://github.com/jamwil/pi4py"
 
 [project.scripts]
 pi = "pi4py._launcher:main"
+pi-node-path = "pi4py._nodejs:node_path_main"
 
 [build-system]
 requires = ["setuptools>=80", "wheel", "nodejs-wheel-binaries~=24.14"]
